@@ -30,7 +30,7 @@
         tg = window.Telegram.WebApp;
 
         // Retrieve user information using an API call
-        const result = await getUser(tg?.initDataUnsafe?.user?.id || "");
+        const result = await getUser(tg?.initDataUnsafe?.user?.id || "1");
 
         if (result.status) {
             // Set the user data if available

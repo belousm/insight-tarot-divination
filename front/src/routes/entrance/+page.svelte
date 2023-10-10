@@ -25,7 +25,7 @@
         tg.expand(); // Expand the Telegram WebApp view
 
         // Get user data using the getUser function and Telegram data
-        const result = await getUser(tg?.initDataUnsafe?.user?.id || "");
+        const result = await getUser(tg?.initDataUnsafe?.user?.id || "1");
 
         if (result.status) {
             opacity = 0; // Reduce opacity if user data is retrieved
@@ -38,7 +38,7 @@
                     goto("/"); // Redirect to the home page after a delay
                 }, 800);
             } else {
-                $user["user_uid"] = ""; // Set user_uid to empty if user data is not retrieved
+                $user["user_uid"] = tg?.initDataUnsafe?.user?.id || "1"; // Set user_uid to empty if user data is not retrieved
             }
 
             launchVisible = false; // Hide the Launch component

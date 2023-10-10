@@ -52,7 +52,7 @@
 
 <!-- Main screen -->
 <div
-    class="w-full max-w-md m-auto h-screen box-border relative select-none"
+    class="w-full max-w-md m-auto box-border relative select-none"
     in:fly={{ duration: 500, opacity: 0, y: 100 }}
 >
     <!-- Display a greeting message with the user's name if available -->
