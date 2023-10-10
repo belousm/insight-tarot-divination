@@ -1,0 +1,76 @@
+version: '2.2'
+services:
+  nginx:
+    image: nginx:alpine
+    restart: always
+    logging:
+      options:
+        max-size: "2m"
+        max-file: "3"
+    volumes:
+      - ./backend/nginx.conf:/etc/nginx/nginx.conf
+      - ./front:/front
+    ports:
+      - ${NGINX_PORTS}
+
+  app:
+    build:
+      dockerfile: Dockerfile
+      context: './backend/app'
+    tty: true
+    stdin_open: true
+    restart: always
+    command: "nodemon index.js"
+    logging:
+      options:
+        max-size: "1m"
+        max-file: "1"
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      - APP_DB_DSN:${APP_DB_DSN}
+      - PUBLIC_HOST=${PUBLIC_HOST}
+    volumes:
+      - ./backend/app:/app
+      - ./front:/front
+    ports:
+      - ${APP_PORTS}
+
+  front:
+    build:
+      dockerfile: Dockerfile
+      context: './front'
+      args:
+        - PUBLIC_HOST=${PUBLIC_HOST}
+    tty: true
+    stdin_open: true
+    restart: always
+    volumes:
+      - ./front:/assets
+    ports:
+      - ${FRONT_PORTS}
+
+  mysql:
+    image: mysql:5.7.8
+    ports:
+      - ${MYSQL_PORTS}
+    restart: always
+    volumes:
+      - ./backend/my.cnf:/etc/mysql/my.cnf:ro
+      - ${MYSQL_DATA}
+    environment:
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - SERVICE_TAGS=dev
+      - SERVICE_NAME=mysql
+    logging:
+      options:
+        max-size: "2m"
+        max-file: "1"
+    healthcheck:
+      test: [ "CMD", "mysqladmin" ,"ping", "-h", "localhost" ]
+      timeout: 20s
+      retries: 10
